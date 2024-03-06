@@ -1,0 +1,1 @@
+A simple Customer Relationship Management (CRM) system using the Java EE framework. This system should allow users to manage and analyze their customer interactions and other customer-related data with the goal to improve customer relationship, retain customers and to drive sales.
