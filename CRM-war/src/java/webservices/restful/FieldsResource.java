@@ -40,5 +40,4 @@ public class FieldsResource {
                 result
         ).build();
     } //end getAllFields
-
 }

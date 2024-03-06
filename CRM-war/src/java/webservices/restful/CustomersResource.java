@@ -102,9 +102,9 @@ public class CustomersResource {
     } //end createCustomer
 
     @GET
-    @Path("/{id}")
+    @Path("/{customer_id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCustomer(@PathParam("id") Long cId) {
+    public Response getCustomer(@PathParam("customer_id") Long cId) {
         try {
             Customer c = customerSessionLocal.getCustomer(cId);
             return Response.status(200).entity(
@@ -120,10 +120,10 @@ public class CustomersResource {
     } //end getCustomer
 
     @PUT
-    @Path("/{id}")
+    @Path("/{customer_id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response editCustomer(@PathParam("id") Long cId, Customer c) {
+    public Response editCustomer(@PathParam("customer_id") Long cId, Customer c) {
         c.setId(cId);
         try {
             customerSessionLocal.updateCustomer(c);
@@ -138,9 +138,9 @@ public class CustomersResource {
     } //end editCustomer
 
     @DELETE
-    @Path("/{id}")
+    @Path("/{customer_id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteCustomer(@PathParam("id") Long cId) {
+    public Response deleteCustomer(@PathParam("customer_id") Long cId) {
         try {
             customerSessionLocal.deleteCustomer(cId);
             return Response.status(204).build();
@@ -160,7 +160,7 @@ public class CustomersResource {
         try {
             Customer customer = customerSessionLocal.getCustomer(customerId);
             customerSessionLocal.addContact(customerId, contact);
-            return Response.ok().entity(customer).build();
+            return Response.status(200).entity(customer).type(MediaType.APPLICATION_JSON).build();
         } catch (NoResultException e) {
             JsonObject exception = Json.createObjectBuilder()
                     .add("error", "Customer or field not found")
@@ -170,7 +170,7 @@ public class CustomersResource {
     }
 
     @POST
-    @Path("/customers/{customer_id}/fields")
+    @Path("/{customer_id}/fields")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addField(@PathParam("customer_id") Long cId, Field field) {

@@ -21,5 +21,6 @@ public class ApplicationConfig extends Application {
         resources.add(webservices.restful.ContactsResource.class);
         resources.add(webservices.restful.CustomersResource.class);
         resources.add(webservices.restful.FieldsResource.class);
+
     }
 }

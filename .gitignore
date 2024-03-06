@@ -1,0 +1,6 @@
+/build/
+/CRM-war/build/
+/CRM-ejb/build/
+/CRM-ejb/dist/
+/dist/
+/CRM-war/dist/
