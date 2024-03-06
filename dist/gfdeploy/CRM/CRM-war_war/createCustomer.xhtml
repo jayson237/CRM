@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./layout/default.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        New Customer
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <p:panelGrid columns="2">
+                <f:facet name="header">
+                    Create New Customer
+                </f:facet>
+                <h:outputLabel for="name">Name: </h:outputLabel>
+                <h:panelGroup>
+                    <p:inputText id="name" value="#{customerManagedBean.name}"
+                                 required="true" requiredMessage="Name is required" />
+                    <p:message for="name" />
+                </h:panelGroup>
+
+                <h:outputLabel>Gender:</h:outputLabel>
+                <p:selectOneMenu value="#{customerManagedBean.gender}">
+                    <f:selectItem itemValue="1" itemLabel="Female" />
+                    <f:selectItem itemValue="2" itemLabel="Male" />
+                </p:selectOneMenu>
+                <h:outputLabel for="dob">Date of Birth (dd/mm/yyyy):
+                </h:outputLabel>
+                <h:panelGroup>
+                    <p:inputText id="dob" value="#{customerManagedBean.dob}"
+                                 required="true" requiredMessage="DOB is required"
+                                 converterMessage="Format should be dd/mm/yyyy">
+                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                    </p:inputText>
+                    <p:message for="dob" />
+                </h:panelGroup>
+
+            </p:panelGrid>
+            <br />
+            <p:commandButton value="Submit"
+                             actionListener="#{customerManagedBean.addCustomer}"
+                             action="searchCustomers.xhtml?faces-redirect=true"
+                             update=":form"
+                             />
+        </h:form>
+    </ui:define>
+
+</ui:composition>

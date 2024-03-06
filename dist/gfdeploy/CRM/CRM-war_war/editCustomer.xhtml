@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./layout/default.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        Edit Customer
+    </ui:define>
+
+    <ui:define name="content">
+        <f:metadata>
+            <!-- to get the cId and bind it to a cId in managed bean -->
+            <f:viewParam name="cId" value="#{customerManagedBean.cId}" />
+            <!-- load the selected customer -->
+            <f:event type="preRenderView" listener="#{customerManagedBean.loadSelectedCustomer}"/>
+        </f:metadata>
+        <h:form id="form">
+            <!-- using growl -->
+            <p:growl id="growl" showDetail="true" sticky="true" />
+            <p:panelGrid columns="2">
+                <f:facet name="header">
+                    Edit Customer
+                </f:facet>
+                <h:outputLabel for="name">Name: </h:outputLabel>
+                <p:inputText id="name" value="#{customerManagedBean.name}"
+                             required="true"
+                             requiredMessage="Name is required" />
+                <h:outputText value="Gender: " />
+                <p:selectOneMenu value="#{customerManagedBean.gender}">
+                    <f:selectItem itemValue = "1" itemLabel = "Female" />
+                    <f:selectItem itemValue = "2" itemLabel = "Male" />
+                </p:selectOneMenu>
+                <h:outputLabel for="dob">Date of Birth (dd/mm/yyyy): </h:outputLabel>
+                <p:inputText id="dob" value="#{customerManagedBean.dob}"
+                             required="true"
+                             requiredMessage="DOB is required"
+                             converterMessage="Format should be dd/mm/yyy">
+                    <f:convertDateTime pattern="dd/MM/yyy" />
+                </p:inputText>
+            </p:panelGrid>
+
+            <p:commandButton value="Submit"
+                             actionListener="#{customerManagedBean.updateCustomer}"
+                             action="searchCustomers.xhtml?faces-redirect=true"
+                             update=":form"/>
+        </h:form>
+    </ui:define>
+
+</ui:composition>

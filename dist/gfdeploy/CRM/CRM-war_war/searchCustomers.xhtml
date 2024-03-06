@@ -1,0 +1,152 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./layout/default.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="title">
+        Search Customers
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="form">
+            <p:growl id="growl" showDetail="true" sticky="true" />
+
+            <p:dataTable widgetVar="customersTable" var="customer" value="#{customerManagedBean.customers}" resizableColumns="true" emptyMessage="No customers found with given criteria">
+                <f:facet name="header">
+                    <p:outputPanel style="text-align: right;">
+                        <h:outputText value="Search: " />
+                        <h:selectOneMenu value="#{customerManagedBean.searchType}">
+                            <f:selectItem itemValue="NAME" itemLabel="name" />
+                            <f:selectItem itemValue="PHONE" itemLabel="phone" />
+                            <f:selectItem itemValue="EMAIL" itemLabel="email" />
+                            <c:forEach var="field" items="#{customerManagedBean.allFields}">
+                                <f:selectItem itemValue="#{field}" itemLabel="#{field}" />
+                            </c:forEach>
+                            <p:ajax listener="#{customerManagedBean.handleSearch}" update="form"/>
+                        </h:selectOneMenu>
+                        <p:inputText placeholder="Enter keywords" value="#{customerManagedBean.searchString}">
+                            <p:ajax event="keyup" update="form" listener="#{customerManagedBean.handleSearch}" />
+                        </p:inputText>
+                    </p:outputPanel>
+                </f:facet>
+
+                <p:column headerText="Id">
+                    <h:outputText value="#{customer.id}" />
+                </p:column>
+
+                <p:column headerText="Name">
+                    <h:outputText value="#{customer.name}" />
+                </p:column>
+
+                <p:column headerText="Gender">
+                    <h:outputText value="Female" rendered="#{customer.gender == 1}" />
+                    <h:outputText value="Male" rendered="#{customer.gender == 2}" />
+                </p:column>
+
+                <p:column headerText="DOB">
+                    <h:outputText value="#{customer.dob}">
+                        <f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column headerText="Created">
+                    <h:outputText value="#{customer.created}" />
+                </p:column>
+
+                <p:column>
+                    <p:commandButton icon="fa fa-fw fa-search" update=":form:customerDetails" oncomplete="PF('customerDialog').show()" title="View">
+                        <f:setPropertyActionListener value="#{customer}" target="#{customerManagedBean.selectedCustomer}" />
+                    </p:commandButton>
+                    <p:button icon="fa fa-fw fa-edit" title="Edit" outcome="editCustomer">
+                        <f:param name="cId" value="#{customer.id}" />
+                    </p:button>
+                    <p:commandButton icon="fa fa-fw fa-remove" action="#{customerManagedBean.deleteCustomer}" update=":form" title="Delete">
+                        <f:param name="cId" value="#{customer.id}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+
+            <p:dialog header="Customer Details" widgetVar="customerDialog" modal="false" showEffect="fade" hideEffect="fade" resizable="false">
+                <p:outputPanel id="customerDetails">
+                    <p:panelGrid columns="2" rendered="#{not empty customerManagedBean.selectedCustomer}">
+                        <h:outputText value="Id" />
+                        <h:outputText value="#{customerManagedBean.selectedCustomer.id}" />
+                        <h:outputText value="Name" />
+                        <h:outputText value="#{customerManagedBean.selectedCustomer.name}" />
+                        <h:outputText value="Gender" />
+                        <h:outputText value="Female" rendered="#{customerManagedBean.selectedCustomer.gender == '1'}" />
+                        <h:outputText value="Male" rendered="#{customerManagedBean.selectedCustomer.gender == '2'}" />
+                        <h:outputText value="DOB" />
+                        <h:outputText value="#{customerManagedBean.selectedCustomer.dob}">
+                            <f:convertDateTime type="date" pattern="dd/MM/yyyy" />
+                        </h:outputText>
+                        <h:outputText value="Created" />
+                        <h:outputText value="#{customerManagedBean.selectedCustomer.created}" />
+
+                        <c:forEach var="field" items="#{customerManagedBean.selectedCustomer.fields}">
+                            <h:outputText style="text-transform: capitalize" value="#{field.name}" />
+                            <h:panelGroup>
+                                <h:outputText style="text-transform: capitalize" value="#{field.fieldValue}" /> &nbsp;
+                                <p:commandLink style="font-size: small" update=":form:customerDetails" action="#{customerManagedBean.deleteField(customerManagedBean.selectedCustomer.id, field.id)}"
+                                               title="Delete">
+                                    <h:outputText value="(delete)" />
+                                </p:commandLink>
+                            </h:panelGroup>
+                        </c:forEach>
+
+                        <c:forEach var="contact" items="#{customerManagedBean.selectedCustomer.contacts}">
+                            <h:outputText value="Tel" rendered="${contact.phone != null}"/>
+                            <h:panelGroup rendered="${contact.phone != null}">
+                                <h:outputText value="#{contact.phone}" /> &nbsp;
+                                <p:commandLink style="font-size: small" update=":form:customerDetails" action="#{customerManagedBean.deleteContact(contact.id)}"
+                                               title="Delete">
+                                    <h:outputText value="(delete)" />
+                                </p:commandLink>
+                            </h:panelGroup>
+
+                            <h:outputText value="Email:" rendered="${contact.email != null}"/>
+                            <h:panelGroup rendered="${contact.email != null}">
+                                <h:outputText value="#{contact.email}" /> &nbsp;
+                                <p:commandLink style="font-size: small" update=":form:customerDetails" action="#{customerManagedBean.deleteContact(contact.id)}"
+                                               title="Delete">
+                                    <h:outputText value="(delete)" />
+                                </p:commandLink>
+                            </h:panelGroup>
+                        </c:forEach>
+
+                        <h:panelGroup>
+                            <p:inputText id="fieldname" value="#{customerManagedBean.fieldName}" required="#{not empty param['form:addField']}" requiredMessage="Field name is required"
+                                         placeholder="field name" />
+                            <p:message for="fieldname" />
+                        </h:panelGroup>
+
+                        <h:panelGroup>
+                            <p:inputText id="fieldvalue" value="#{customerManagedBean.fieldValue}" required="#{not empty param['form:addField']}" requiredMessage="Field value is required"
+                                         placeholder="value" />
+                            <p:commandButton id="addField" value="Add" action="#{customerManagedBean.addField}" update=":form:customerDetails" />
+                            <p:message for="fieldvalue" />
+                        </h:panelGroup>
+
+                        <p:selectOneMenu value="#{customerManagedBean.contactType}">
+                            <f:selectItem itemValue="PHONE" itemLabel="phone" />
+                            <f:selectItem itemValue="EMAIL" itemLabel="email" />
+                        </p:selectOneMenu>
+
+                        <h:panelGroup>
+                            <h:inputText id="contactvalue" value="#{customerManagedBean.contactValue}" required="#{not empty param['form:addContact']}"
+                                         requiredMessage="Value is required" />
+                            <p:commandButton id="addContact" value="Add" action="#{customerManagedBean.addContact}" update=":form:customerDetails" />
+                            <p:message for="contactvalue" />
+                        </h:panelGroup>
+                    </p:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
